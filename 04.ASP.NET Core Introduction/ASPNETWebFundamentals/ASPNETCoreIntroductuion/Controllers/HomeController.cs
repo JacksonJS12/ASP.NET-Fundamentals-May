@@ -15,6 +15,7 @@ namespace ASPNETCoreIntroductuion.Controllers
 
         public IActionResult Index()
         {
+            ViewData[]
             return View();
         }
 
