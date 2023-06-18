@@ -1,4 +1,4 @@
-namespace MVCIntroDemoo.Models
+namespace Homies.Models
 {
     public class ErrorViewModel
     {
