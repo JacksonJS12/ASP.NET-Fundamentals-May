@@ -1,13 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using Library.Web.ViewModels.Home;
-
-namespace Library.Web.Controllers
+﻿namespace Library.Web.Controllers
 {
-    public class HomeController : Controller
+    using Microsoft.AspNetCore.Mvc;
+    using System.Diagnostics;
+    using ViewModels.Home;
+    using Microsoft.AspNetCore.Authorization;
+
+    public class HomeController : BaseController
     {
+        [AllowAnonymous]
         public IActionResult Index()
         {
+            if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                return RedirectToAction("All", "Book");
+            }
+
             return View();
         }
 
