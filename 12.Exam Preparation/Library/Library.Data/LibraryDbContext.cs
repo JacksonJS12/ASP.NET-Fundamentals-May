@@ -54,6 +54,7 @@
                Id = 5,
                Name = "Fantasy"
            });
+            
 
             builder.Entity<IdentityUserBook>()
                 .HasKey(x => new { x.BookId, x.CollectorId });
@@ -67,5 +68,6 @@
 
         public DbSet<Book> Books { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<IdentityUserBook> IdentityUserBooks { get; set; }
     }
 }
