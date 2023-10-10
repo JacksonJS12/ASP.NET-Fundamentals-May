@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Library.Data;
+using Library.Data.Models;
 using Library.Services.Data.Models.Interfaces;
+using Library.Web.ViewModels;
 using Library.Web.ViewModels.Home;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Library.Services.Data.Models
 {
@@ -18,6 +21,25 @@ namespace Library.Services.Data.Models
         {
             this.dbContext = dbContext;
         }
+
+        public async Task AddBookToCollectionAsync(string userId, BookViewModel book)
+        {
+            bool alreadyAdded = await dbContext.IdentityUserBooks
+                .AnyAsync(ub => ub.CollectorId == userId && ub.BookId == book.Id);
+
+            if (alreadyAdded == false)
+            {
+                var userBook = new IdentityUserBook
+                {
+                    CollectorId = userId,
+                    BookId = book.Id
+                };
+
+                await dbContext.IdentityUserBooks.AddAsync(userBook);
+                await dbContext.SaveChangesAsync();
+            }
+        }
+
         public async Task<IEnumerable<AllBookViewModel>> GetAllBooksAsync()
         {
             return await this.dbContext
@@ -33,6 +55,23 @@ namespace Library.Services.Data.Models
                 }).ToArrayAsync();
         }
 
+        public async Task<BookViewModel?> GetBookIdAsync(int id)
+        {
+            return await dbContext
+                .Books
+                .Where(b => b.Id == id)
+                .Select(b => new BookViewModel
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    ImageUrl = b.ImageUrl,
+                    Description = b.Description,
+                    Rating = b.Rating,
+                    CategoryId = b.CategoryId
+                }).FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<AllBookViewModel>> GetMyBooksBooksAsync(string userId)
         {
             return await dbContext.IdentityUserBooks
@@ -46,6 +85,18 @@ namespace Library.Services.Data.Models
                     Description = b.Book.Description,
                     Category = b.Book.Category.Name
                 }).ToListAsync();
+        }
+
+        public async Task RemoveBookToCollectionAsync(string userId, BookViewModel book)
+        {
+            var userBook = await dbContext.IdentityUserBooks
+                .FirstOrDefaultAsync(ub => ub.CollectorId == userId && ub.BookId == book.Id);
+
+            if (userBook != null)
+            {
+                dbContext.IdentityUserBooks.Remove(userBook);
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }
