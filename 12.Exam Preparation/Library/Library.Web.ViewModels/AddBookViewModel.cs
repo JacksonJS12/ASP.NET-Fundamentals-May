@@ -2,7 +2,7 @@
 
 namespace Library.Web.ViewModels
 {
-    public class BookViewModel
+    public class AddBookViewModel
     {
         public int Id { get; set; }
 
@@ -14,18 +14,19 @@ namespace Library.Web.ViewModels
         [StringLength(50, MinimumLength = 5)]
         public string Author { get; set; } = null!;
 
-        [Required]
-        [MinLength(5)]
+        [Required(AllowEmptyStrings = false)]
         public string ImageUrl { get; set; } = null!;
 
         [Required]
-        public decimal Rating { get; set; }
+        public string Rating { get; set; } = null!;
 
         [Required]
         [StringLength(5000, MinimumLength = 5)]
         public string Description { get; set; } = null!;
 
         [Range(1, int.MaxValue)]
-        public int CategoryId { get; set; } 
+        public int CategoryId { get; set; }
+
+        public IEnumerable<CategoryViewModel> Categories { get; set; } = new HashSet<CategoryViewModel>();
     }
 }

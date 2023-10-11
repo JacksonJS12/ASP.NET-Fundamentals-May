@@ -12,7 +12,7 @@ namespace Library.Web.ViewModels.Home
 
         public string ImageUrl { get; set; } = null!;
 
-        public decimal? Rating { get; set; }
+        public decimal Rating { get; set; }
 
         public string? Description { get; set; } 
 

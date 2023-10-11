@@ -87,6 +87,23 @@ namespace Library.Services.Data.Models
                 }).ToListAsync();
         }
 
+        public async Task<AddBookViewModel> GetNewAddBookModelAsync()
+        {
+            var categories = await dbContext.Categories
+                .Select(c => new CategoryViewModel()
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                }).ToListAsync();
+
+            var model = new AddBookViewModel
+            {
+                Categories = categories
+            };
+
+            return model;
+        }
+
         public async Task RemoveBookToCollectionAsync(string userId, BookViewModel book)
         {
             var userBook = await dbContext.IdentityUserBooks
@@ -97,6 +114,22 @@ namespace Library.Services.Data.Models
                 dbContext.IdentityUserBooks.Remove(userBook);
                 await dbContext.SaveChangesAsync();
             }
+        }
+
+        public async Task AddBookAsync(AddBookViewModel model)
+        {
+            Book book = new Book()
+            {
+                Title = model.Title,
+                Author = model.Author,
+                ImageUrl = model.ImageUrl,
+                Description = model.Description,
+                CategoryId = model.CategoryId,
+                Rating = decimal.Parse(model.Rating)
+            };
+
+            await dbContext.Books.AddAsync(book);
+            await dbContext.SaveChangesAsync();
         }
     }
 }
